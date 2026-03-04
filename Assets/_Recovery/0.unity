@@ -127150,7 +127150,9 @@ MonoBehaviour:
   groundMask:
     serializedVersion: 2
     m_Bits: 64
+  hoveringDuration: 5
   isGrounded: 0
+  isHovering: 0
 --- !u!43 &1213904168
 Mesh:
   m_ObjectHideFlags: 0
