@@ -9,16 +9,22 @@ public class PlayerController : MonoBehaviour
     public float moveSpeed = 4f;
     public float jumpForce = 5f;
     public LayerMask groundMask;
+    public LayerMask slopeMask;
     public float currentmaxLinVel;
 
     public float hoveringDuration = 5;
     public float hoveringTimer;
-    public float currentHoverTimeLeft;
+    public float currentHoverTimeLeft; // will use to beef up hover mechanic as deployment ensues
+
+    public float groundDrag = 5f;
+    public float airDrag = 0f;
+    public float slopeDrag = 10f;
     
 
     private Rigidbody rb;
     [SerializeField] private bool isGrounded;
     [SerializeField] private bool isHovering;
+    [SerializeField] private bool onSlope;
 
     private void Awake()
     {
@@ -68,6 +74,16 @@ public class PlayerController : MonoBehaviour
         rb.linearVelocity = newVelocity;
 
         isGrounded = Physics.Raycast(transform.position, Vector3.down, 1.1f, groundMask);
+        onSlope = Physics.Raycast(transform.position, Vector3.down, 1.1f, slopeMask);
+
+        if (isGrounded) 
+        {
+            rb.linearDamping = groundDrag;
+        }
+        else 
+        {
+            rb.linearDamping = airDrag;
+        }
     }
 
     public void Hover() 
