@@ -74,9 +74,14 @@ public class PlayerController : MonoBehaviour
         rb.linearVelocity = newVelocity;
 
         isGrounded = Physics.Raycast(transform.position, Vector3.down, 1.1f, groundMask);
-        onSlope = Physics.Raycast(transform.position, Vector3.down, 1.1f, slopeMask);
+        onSlope = Physics.Raycast(transform.position, Vector3.down, 1.5f, slopeMask);
 
-        if (isGrounded) 
+        if (onSlope) 
+        {
+            isGrounded = true;
+        }
+
+        if (isGrounded || onSlope) 
         {
             rb.linearDamping = groundDrag;
         }
