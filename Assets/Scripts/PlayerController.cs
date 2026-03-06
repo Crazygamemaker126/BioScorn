@@ -10,6 +10,8 @@ public class PlayerController : MonoBehaviour
 {
     public float moveSpeed = 4f;
     public float jumpForce = 5f;
+
+    public LayerMask platformMask;
     public LayerMask groundMask;
     public LayerMask slopeMask;
     public float currentmaxLinVel;
@@ -33,7 +35,9 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private bool onSlope;
     [SerializeField] private bool jumpingFromSlope;
     [SerializeField] private bool canHover = true;
+    
 
+    
     private Coroutine hoverCooldownCo;
 
     private void Awake()
@@ -147,6 +151,9 @@ public class PlayerController : MonoBehaviour
 
         isGrounded = Physics.Raycast(transform.position, Vector3.down, 1.1f, groundMask);
         onSlope = Physics.Raycast(transform.position, Vector3.down, 1.5f, slopeMask);
+       
+
+     
 
         if (onSlope) 
         {
@@ -218,7 +225,7 @@ public class PlayerController : MonoBehaviour
         hoveringTimer += Time.deltaTime;
         canHover = false;
         isHovering = false;
-        Debug.Log("Cool those jets");
+        Debug.Log("Hover ability recovering");
 
         
         yield return new WaitForSeconds(maxHoverDuration - hoveringTimer);
@@ -226,6 +233,7 @@ public class PlayerController : MonoBehaviour
         if(hoveringTimer >= maxHoverDuration)
        canHover = true;
         hoverCooldownCo = null;
+        Debug.Log("Hover ability returned");
 
 
     }
