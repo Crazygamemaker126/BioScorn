@@ -170213,7 +170213,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.25}
   m_AnchorMax: {x: 1, y: 0.75}
-  m_AnchoredPosition: {x: 0.000015258789, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: -0.000030518, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &798781954
@@ -170686,6 +170686,7 @@ GameObject:
   - component: {fileID: 946158491}
   - component: {fileID: 946158490}
   - component: {fileID: 946158495}
+  - component: {fileID: 946158496}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -170850,6 +170851,22 @@ MonoBehaviour:
   onSlope: 0
   jumpingFromSlope: 0
   canHover: 0
+--- !u!114 &946158496
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 946158489}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 50170223bd2425c45b627cf78e6147a6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HealthTracking
+  curHealth: 100
+  maxHealth: 100
+  keys: 0
+  ammo: 0
 --- !u!1 &1022677102
 GameObject:
   m_ObjectHideFlags: 0
