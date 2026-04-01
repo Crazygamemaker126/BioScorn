@@ -28,9 +28,9 @@ public class PlayerController : MonoBehaviour
     
 
     private Rigidbody rb;
-    [SerializeField] private bool isGrounded;
-    [SerializeField] private bool isHovering;
-    [SerializeField] private bool onSlope;
+    [SerializeField] private bool isGrounded; //Never returns to True when contacting slope while hovering 
+    [SerializeField] private bool isHovering; //Turns to false when contacting slope
+    [SerializeField] private bool onSlope; //Never returns to True when contacting slope while hovering 
     [SerializeField] private bool jumpingFromSlope;
     [SerializeField] private bool canHover = true;
 
