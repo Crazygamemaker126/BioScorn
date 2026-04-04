@@ -1,27 +1,31 @@
+using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
-public class HealthTracking : MonoBehaviour //ENTIRE THING NEEDS MAJOR REFINING.
+
+public class HealthTracking : MonoBehaviour
 {
+   
     [Header("Inspector Variables")]
-    public int curHealth; //Figure out how to Health into a Vector2. not super important, still a good idea.
+    public int curHealth;
     public int maxHealth = 100;
 
     public int keys;
     public int ammo;
 
-
     [Header("Elements in Hierarchy")]
     public Slider healthBar;
     public TextMeshProUGUI keysCount;
     public TextMeshProUGUI ammoCount;
-    public UnityEvent OnHealthChanged; //Figure out how to use this for proper health tracking
+    public UnityEvent OnHealthChangedUnity; 
+    public event Action<int> OnHealthChanged;
+
     
+    public int CurrentHealth => Mathf.RoundToInt(healthBar != null ? healthBar.value : curHealth);
 
-
-
+    
     private void MaxHealthChecker()
     {
         if (curHealth > maxHealth)
@@ -29,18 +33,16 @@ public class HealthTracking : MonoBehaviour //ENTIRE THING NEEDS MAJOR REFINING.
             curHealth = maxHealth;
         }
     }
-    
 
+    
     private void OnTriggerEnter(Collider other)
     {
-        if(other.gameObject.CompareTag("Health Pickup"))
+        if (other.gameObject.CompareTag("Health Pickup"))
         {
-            //OnHealthIncreased(); //Needs reference to Health Pickup Item. 
             MaxHealthChecker();
-
         }
 
-        if(other.gameObject.CompareTag("Key"))
+        if (other.gameObject.CompareTag("Key"))
         {
             keys++;
             keysCount.text = keys.ToString("Keys: ");
@@ -51,23 +53,21 @@ public class HealthTracking : MonoBehaviour //ENTIRE THING NEEDS MAJOR REFINING.
             ammo++;
             ammoCount.text = ammo.ToString("Ammo: ");
         }
-
-        
-    }
-
-
-    public void OnHealthIncreased(int amount)
-    {
-        healthBar.value += amount;
-        
-    }
-
-    public void OnDamageTaken(int amount)
-    {
-        healthBar.value -= amount;
     }
 
     
+    public void OnHealthIncreased(int amount)
+    {
+        healthBar.value += amount;
+        curHealth = Mathf.Clamp(Mathf.RoundToInt(healthBar.value), 0, maxHealth);
+        OnHealthChanged?.Invoke(CurrentHealth);
+    }
 
-
+    
+    public void OnDamageTaken(int amount)
+    {
+        healthBar.value -= amount;
+        curHealth = Mathf.Clamp(Mathf.RoundToInt(healthBar.value), 0, maxHealth);
+        OnHealthChanged?.Invoke(CurrentHealth); 
+    }
 }

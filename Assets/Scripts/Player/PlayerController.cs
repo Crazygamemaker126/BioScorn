@@ -51,8 +51,8 @@ public class PlayerController : MonoBehaviour
         rb = GetComponent<Rigidbody> ();
         rb.freezeRotation = true;
         currentmaxLinVel = rb.maxLinearVelocity;
-        hoverTimerSlider.maxValue = maxHoverDuration;
         hoverTimerSlider.value = hoveringTimer;
+        /*hoverTimerSlider.maxValue = maxHoverDuration;*/ //Leave this out, it breaks UI by setting the maxValue of the slider to 5 when it should just be 1.
         originalAngularDamping = rb.angularDamping;
         hoveringTimer = maxHoverDuration;
         currentHoverTimeLeft = maxHoverDuration;
