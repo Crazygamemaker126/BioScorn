@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// Manages the persistent HUD — health bar, armor, keys, hover timer.
+/// Manages the persistent HUD — health bar, armor, keys, 
 /// Subscribes to PlayerInventory events in Start().
 /// No Update() polling — reacts only when data actually changes.
 /// </summary>
@@ -19,9 +19,7 @@ public class HUDController : MonoBehaviour
     [Header("Keys")]
     public TextMeshProUGUI keysText;
 
-    [Header("Hover Timer")]
-    public Slider          hoverTimerSlider;
-    public TextMeshProUGUI hoverTimerText;
+    
 
     [Header("Data Source")]
     public PlayerInventory playerInventory;
@@ -40,7 +38,7 @@ public class HUDController : MonoBehaviour
 
         playerInventory.OnArmorChanged          += UpdateArmor;
         playerInventory.OnKeyCountChanged       += UpdateKeys;
-        playerInventory.OnHoverDurationChanged  += UpdateHoverMax;
+        
 
         // Initialise displays
         if (playerInventory.HealthTracking != null)
@@ -59,7 +57,7 @@ public class HUDController : MonoBehaviour
 
         playerInventory.OnArmorChanged         -= UpdateArmor;
         playerInventory.OnKeyCountChanged      -= UpdateKeys;
-        playerInventory.OnHoverDurationChanged -= UpdateHoverMax;
+        
     }
 
     // ── Event Handlers ────────────────────────────────────────────────────────
@@ -83,9 +81,5 @@ public class HUDController : MonoBehaviour
             keysText.text = $"Keys: {count}";
     }
 
-    private void UpdateHoverMax(float newMax)
-    {
-        if (hoverTimerSlider != null) hoverTimerSlider.maxValue = newMax;
-        if (hoverTimerText   != null) hoverTimerText.text = $"Hover: {newMax:F1}s max";
-    }
+    
 }
