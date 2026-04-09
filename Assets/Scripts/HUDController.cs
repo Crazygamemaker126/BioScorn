@@ -33,7 +33,7 @@ public class HUDController : MonoBehaviour
         }
 
         // Subscribe — UI updates only when data changes
-        /*if (playerInventory.HealthTracking != null)
+        if (playerInventory.HealthTracking != null)
             playerInventory.HealthTracking.OnHealthChanged += UpdateHealth;
 
         playerInventory.OnArmorChanged          += UpdateArmor;
@@ -42,7 +42,7 @@ public class HUDController : MonoBehaviour
 
         // Initialise displays
         if (playerInventory.HealthTracking != null)
-            UpdateHealth(playerInventory.HealthTracking.CurrentHealth);*/
+            UpdateHealth(playerInventory.HealthTracking.CurrentHealth);
 
         UpdateArmor(0);
         UpdateKeys(0);
@@ -52,11 +52,11 @@ public class HUDController : MonoBehaviour
     {
         if (playerInventory == null) return;
 
-        /*if (playerInventory.HealthTracking != null)
+        if (playerInventory.HealthTracking != null)
             playerInventory.HealthTracking.OnHealthChanged -= UpdateHealth;
 
         playerInventory.OnArmorChanged         -= UpdateArmor;
-        playerInventory.OnKeyCountChanged      -= UpdateKeys;*/
+        playerInventory.OnKeyCountChanged      -= UpdateKeys;
         
     }
 
@@ -64,9 +64,9 @@ public class HUDController : MonoBehaviour
 
     private void UpdateHealth(int current)
     {
-        /*if (healthBar  != null) healthBar.value = current;
+        if (healthBar  != null) healthBar.value = current;
         if (healthText != null && playerInventory.HealthTracking != null)
-            healthText.text = $"HP: {current} / {playerInventory.HealthTracking.maxHealth}";*/
+            healthText.text = $"HP: {current} / {playerInventory.HealthTracking.maxHealth}";
     }
 
     private void UpdateArmor(int armor)

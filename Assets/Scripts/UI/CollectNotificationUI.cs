@@ -32,7 +32,7 @@ public class CollectNotificationUI : MonoBehaviour
             return;
         }
 
-        //playerInventory.OnItemCollected += ShowNotification;
+        playerInventory.OnItemCollected += ShowNotification;
 
         if (notificationCanvasGroup != null)
             notificationCanvasGroup.alpha = 0f;
@@ -40,8 +40,8 @@ public class CollectNotificationUI : MonoBehaviour
 
     private void OnDestroy()
     {
-        //if (playerInventory != null)
-        //    playerInventory.OnItemCollected -= ShowNotification;
+        if (playerInventory != null)
+            playerInventory.OnItemCollected -= ShowNotification;
     }
 
     private void ShowNotification(Item_Base item)

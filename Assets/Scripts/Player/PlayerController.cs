@@ -1,273 +1,58 @@
 using UnityEngine;
-using UnityEngine.Events;
-using System;
-using System.Collections;
-using UnityEngine.UI;
-using System.IO;
-using UnityEngine.InputSystem;
 
-[RequireComponent(typeof(Rigidbody))]
-
-//Extract methods
 public class PlayerController : MonoBehaviour
 {
-    public float moveSpeed = 4f;
-    public float jumpForce = 5f;
+    [Header("Camera Settings")]
+    public float mouseSensitivity = 2f;
+    public float verticalClamp = 90f;
+    public GameObject cameraHolder;
 
-    public Vector3 moveDir;
+    [Header("Movement Settings")]
+    public float moveSpeed;
 
-    public LayerMask platformMask;
-    public LayerMask groundMask;
-    public LayerMask slopeMask;
-    public float currentmaxLinVel;
+    private float xRot, yRot;
 
-    public float maxHoverDuration = 5f;
-    public float hoveringTimer;
-    public float currentHoverTimeLeft; // will use to beef up hover mechanic as deployment ensues
-    public float slopeJumpOffset = 3f;
-    public float originalAngularDamping;
+    [Header("Animator Parameters")]
+    public Animator animator;
 
-    public float groundDrag = 5f;
-    public float airDrag = 0f;
-    public float slopeDrag = 10f;
-
-    public Slider hoverTimerSlider;
-
-
-    private Rigidbody rb;
-    [SerializeField] private bool isGrounded; //Never returns to True when contacting slope while hovering 
-    [SerializeField] private bool isHovering; //Turns to false when contacting slope
-    [SerializeField] private bool onSlope; //Never returns to True when contacting slope while hovering 
-    [SerializeField] private bool jumpingFromSlope;
-    [SerializeField] private bool canHover = true;
-    [SerializeField] private PlayerInventory inventory;
-
-
-
-    private Coroutine startHoverCo;
-    private Coroutine regenHoverTimerCo;
-
-    void OnEnable() => inventory.OnWingsCollected += ApplyWings;
-    void OnDisable() => inventory.OnWingsCollected -= ApplyWings;
-
-    private void Awake()
+    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    void Start()
     {
-        rb = GetComponent<Rigidbody>();
-        rb.freezeRotation = true;
-        currentmaxLinVel = rb.maxLinearVelocity;
-        hoverTimerSlider.value = hoveringTimer;
-        /*hoverTimerSlider.maxValue = maxHoverDuration;*/ //Leave this out, it breaks UI by setting the maxValue of the slider to 5 when it should just be 1.
-        originalAngularDamping = rb.angularDamping;
-        hoveringTimer = maxHoverDuration;
-        currentHoverTimeLeft = maxHoverDuration;
-        canHover = true;
-
-        UpdateHoverTimer();
-
-
+        animator = GetComponent<Animator>();
+        Cursor.lockState = CursorLockMode.Locked;
     }
 
-    private void Update()
+    // Update is called once per frame
+    void Update()
     {
-        UpdateHoverTimer();
-
-
-
-
-
-
-    }
-
-    public void OnJump(InputAction.CallbackContext context)
-    {
-        if (context.performed)
-        {
-            if (isGrounded)
-            {
-                if (!onSlope)
-                {
-                    rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
-                }
-                else
-                {
-                    rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
-                    jumpingFromSlope = true;
-                }
-            }
-            else if (!isHovering && canHover && hoveringTimer > 0)
-            {
-
-                StartHover();
-            }
-            else
-            {
-
-                StopHover();
-            }
-
-        }
-
-    }
-
-    public void OnMove(InputAction.CallbackContext context)
-    {
-        moveDir = new Vector3(context.ReadValue<Vector2>().x, 0, context.ReadValue<Vector2>().y);
-
-
-    }
-
-    public void HandleMovement()
-    {
-        Vector3 move = (transform.forward * moveDir.z + transform.right * moveDir.x) * moveSpeed;
-        Vector3 newVelocity = new Vector3(move.x, rb.linearVelocity.y, move.z);
-        rb.linearVelocity = newVelocity;
-
-    }
-
-    private void FixedUpdate()
-    {
-
+        HandleCamera();
         HandleMovement();
-        HandleHoverTimer();
-        isGrounded = Physics.Raycast(transform.position, Vector3.down, 1.1f, groundMask);
-        onSlope = Physics.Raycast(transform.position, Vector3.down, 1.5f, slopeMask);
-
-
-
-
-        if (onSlope)
-        {
-            isGrounded = true;
-        }
-
-        if (isGrounded || onSlope)
-        {
-            rb.linearDamping = groundDrag;
-            StopHover();
-        }
-        else
-        {
-            rb.linearDamping = airDrag;
-        }
     }
 
-    void ApplyWings(WingsData wings)
+    void HandleCamera()
     {
-        maxHoverDuration += wings.hoverDurationBonus;
-        moveSpeed += wings.moveSpeedBonus;
-        jumpForce += wings.jumpForceBonus;
+        float mouseY = Input.GetAxis("Mouse X");
+        float mouseX = Input.GetAxis("Mouse Y");
 
-        // Sync the live timer so the slider doesn't look wrong after pickup
-        hoveringTimer = maxHoverDuration;
-        currentHoverTimeLeft = maxHoverDuration;
-        UpdateHoverTimer();
-    }
+        xRot -= mouseX;
+        xRot = Mathf.Clamp(xRot, -verticalClamp, verticalClamp);
 
-    public void StartHover()
-    {
-        isHovering = true;
-        canHover = false;
-        rb.useGravity = false;
+        yRot += mouseY;
 
-        rb.linearVelocity = new Vector3(rb.linearVelocity.x, 0, rb.linearVelocity.z);
-
-
-
+        cameraHolder.transform.localRotation = Quaternion.Euler(xRot, 0, 0);
+        transform.rotation = Quaternion.Euler(0, yRot, 0);
 
     }
 
-
-
-    public void StopHover()
+    void HandleMovement()
     {
-        canHover = true;
-        isHovering = false;
+        float moveX = Input.GetAxis("Horizontal");
+        float moveZ = Input.GetAxis("Vertical");
 
-        if (!jumpingFromSlope)
-        {
-            rb.useGravity = true;
+        animator.SetFloat("vertical", moveZ);
+        animator.SetFloat("horizontal", moveX);
 
-            rb.maxLinearVelocity = currentmaxLinVel;
-        }
-        else
-        {
-            rb.useGravity = true;
-
-            rb.maxLinearVelocity = currentmaxLinVel;
-            jumpingFromSlope = false;
-            rb.angularDamping = originalAngularDamping;
-        }
-
-
-
-    }
-
-    public void HandleHoverTimer()
-    {
-        if (isHovering)
-        {
-            hoveringTimer -= Time.deltaTime;
-        }
-        else
-        {
-            hoveringTimer += Time.deltaTime;
-        }
-
-        hoveringTimer = Mathf.Clamp(hoveringTimer, 0, maxHoverDuration);
-
-        if (hoveringTimer == 0)
-        {
-            StopHover();
-        }
-    }
-
-    public IEnumerator StartHoverCo()
-    {
-        Debug.Log("Hover timer start");
-        while (hoveringTimer > 0)
-        {
-            hoveringTimer -= Time.deltaTime;
-
-            yield return null;
-        }
-
-        StopHover();
-        //Debug.Log("HoverCooldownCo");
-        //hoveringTimer += Time.deltaTime;
-        //canHover = false;
-        //isHovering = false;
-        //Debug.Log("Hover ability recovering");
-
-        // if(hoveringTimer >= maxHoverDuration)
-        //canHover = true;
-        // hoverCooldownCo = null;
-        // Debug.Log("Hover ability returned");
-
-
-    }
-
-    public IEnumerator RegenHoverTimerCo()
-    {
-        Debug.Log("Hover timer regenerating");
-
-        while (hoveringTimer < maxHoverDuration)
-        {
-            hoveringTimer += Time.deltaTime;
-            yield return null;
-        }
-
-    }
-
-    public void UpdateHoverTimer()
-    {
-        hoverTimerSlider.value = hoveringTimer / maxHoverDuration;
-
-    }
-
-
-
-    private void OnDrawGizmos()
-    {
-
+        Vector3 moveDir = transform.right * moveX + transform.forward * moveZ;
+        transform.position += moveDir * moveSpeed * Time.deltaTime;
     }
 }
