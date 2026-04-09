@@ -402,11 +402,11 @@ Transform:
   m_GameObject: {fileID: 22967538}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0.24550319, z: -0, w: 0.9693958}
-  m_LocalPosition: {x: -53.45, y: 3.23, z: -20.41}
-  m_LocalScale: {x: 1, y: 6.506251, z: 6.4007516}
+  m_LocalPosition: {x: 26.704166, y: 3.22999, z: -39.236588}
+  m_LocalScale: {x: 1, y: 6.506251, z: 6.4007506}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 2013259098}
   m_LocalEulerAnglesHint: {x: 0, y: -28.423, z: 0}
 --- !u!1 &51620120
 GameObject:
@@ -172279,11 +172279,11 @@ Transform:
   m_GameObject: {fileID: 812042245}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0.7775473, z: -0, w: 0.62882453}
-  m_LocalPosition: {x: -75.84, y: 3.06, z: -31.65}
-  m_LocalScale: {x: 1, y: 6.073772, z: 6.400752}
+  m_LocalPosition: {x: 4.314171, y: 3.05999, z: -50.47659}
+  m_LocalScale: {x: 1, y: 6.073772, z: 6.400751}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 2013259098}
   m_LocalEulerAnglesHint: {x: 0, y: -102.073, z: 0}
 --- !u!1 &824633579
 GameObject:
@@ -172765,7 +172765,7 @@ Transform:
   m_GameObject: {fileID: 875381626}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -34.53, y: 0.29, z: -39.289}
+  m_LocalPosition: {x: -34.53, y: 1.41, z: -39.289}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -173480,7 +173480,6 @@ GameObject:
   - component: {fileID: 946158490}
   - component: {fileID: 946158495}
   - component: {fileID: 946158496}
-  - component: {fileID: 946158497}
   - component: {fileID: 946158498}
   m_Layer: 0
   m_Name: Player
@@ -173624,6 +173623,34 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7ae0eccbb87590d47b93f81d646c9a06, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
+  moveSpeed: 0
+  jumpForce: 5
+  moveDir: {x: 0, y: 0, z: 0}
+  platformMask:
+    serializedVersion: 2
+    m_Bits: 0
+  groundMask:
+    serializedVersion: 2
+    m_Bits: 0
+  slopeMask:
+    serializedVersion: 2
+    m_Bits: 0
+  currentmaxLinVel: 0
+  maxHoverDuration: 5
+  hoveringTimer: 0
+  currentHoverTimeLeft: 0
+  slopeJumpOffset: 3
+  originalAngularDamping: 0
+  groundDrag: 5
+  airDrag: 0
+  slopeDrag: 10
+  hoverTimerSlider: {fileID: 0}
+  isGrounded: 0
+  isHovering: 0
+  onSlope: 0
+  jumpingFromSlope: 0
+  canHover: 1
+  inventory: {fileID: 0}
 --- !u!114 &946158496
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -173766,19 +173793,6 @@ MonoBehaviour:
   m_DefaultActionMap: 
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
---- !u!114 &946158497
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 946158489}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bf1cc17f38d70c74488c610b0a5d68d5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerInventory
-  inventoryTextbox: {fileID: 921738337}
 --- !u!114 &946158498
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -174029,7 +174043,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1008624037}
   m_Layer: 0
-  m_Name: GameObject
+  m_Name: Level 1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -175076,11 +175090,11 @@ Transform:
   m_GameObject: {fileID: 1269624528}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0.62589705, z: -0, w: -0.77990574}
-  m_LocalPosition: {x: -77.1, y: 2.42, z: 7.1}
+  m_LocalPosition: {x: 3.0541687, y: 2.41999, z: -11.726591}
   m_LocalScale: {x: 1, y: 4.8423176, z: 6.400752}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 2013259098}
   m_LocalEulerAnglesHint: {x: 0, y: -282.504, z: 0}
 --- !u!1 &1269752449
 GameObject:
@@ -203218,11 +203232,11 @@ Transform:
   m_GameObject: {fileID: 1548021438}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0.24550319, z: -0, w: 0.9693958}
-  m_LocalPosition: {x: -55.16, y: 3.14, z: 8.57}
-  m_LocalScale: {x: 1, y: 6.1607175, z: 6.4007516}
+  m_LocalPosition: {x: 24.994167, y: 3.13999, z: -10.25659}
+  m_LocalScale: {x: 1, y: 6.1607175, z: 6.4007506}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 2013259098}
   m_LocalEulerAnglesHint: {x: 0, y: -28.423, z: 0}
 --- !u!1 &1555069000
 GameObject:
@@ -203361,7 +203375,7 @@ Transform:
   m_GameObject: {fileID: 1555878429}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -36.47, y: 0, z: -45.46}
+  m_LocalPosition: {x: -36.47, y: 2.38, z: -45.46}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -203687,11 +203701,11 @@ Transform:
   m_GameObject: {fileID: 1572031925}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0.05753049, z: -0, w: 0.99834377}
-  m_LocalPosition: {x: -67.57, y: 2.01, z: -13.5}
+  m_LocalPosition: {x: 12.5841675, y: 2.00999, z: -32.32659}
   m_LocalScale: {x: 1, y: 3.9855895, z: 6.4007516}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 2013259098}
   m_LocalEulerAnglesHint: {x: 0, y: -6.596, z: 0}
 --- !u!1 &1573200011
 GameObject:
@@ -204402,7 +204416,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 140197dcb15568643a3337a3050c54f9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CollectNotificationUI
-  playerInventory: {fileID: 946158497}
+  playerInventory: {fileID: 0}
   notificationText: {fileID: 921738337}
   notificationCanvasGroup: {fileID: 992526474}
   displayDuration: 15
@@ -204423,7 +204437,7 @@ MonoBehaviour:
   healthText: {fileID: 904019224}
   armorText: {fileID: 0}
   keysText: {fileID: 418107002}
-  playerInventory: {fileID: 946158497}
+  playerInventory: {fileID: 0}
 --- !u!114 &1642336938
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -204436,7 +204450,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: adc2241f65a10ff4383b3da052dcc0e6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InventoryPanelUI
-  playerInventory: {fileID: 946158497}
+  playerInventory: {fileID: 0}
   inventoryRowPrefab: {fileID: 921738337}
   rowContainer: {fileID: 0}
   toggleKey: 9
@@ -206825,7 +206839,12 @@ Transform:
   m_LocalPosition: {x: -80.15417, y: 0.00001, z: 18.82659}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 812042249}
+  - {fileID: 1269624532}
+  - {fileID: 22967542}
+  - {fileID: 1572031929}
+  - {fileID: 1548021442}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2016033752
@@ -207029,8 +207048,3 @@ SceneRoots:
   - {fileID: 1008624037}
   - {fileID: 1697585202}
   - {fileID: 2013259098}
-  - {fileID: 812042249}
-  - {fileID: 1269624532}
-  - {fileID: 22967542}
-  - {fileID: 1572031929}
-  - {fileID: 1548021442}

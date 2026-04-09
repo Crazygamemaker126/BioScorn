@@ -22,14 +22,14 @@ public class InventoryPanelUI : MonoBehaviour
             return;
         }
 
-        playerInventory.OnItemCollected += AddInventoryRow;
+        //playerInventory.OnItemCollected += AddInventoryRow;
         //gameObject.SetActive(false);
     }
 
     private void OnDestroy()
     {
-        if (playerInventory != null)
-            playerInventory.OnItemCollected -= AddInventoryRow;
+        //if (playerInventory != null)
+            //playerInventory.OnItemCollected -= AddInventoryRow;
     }
 
     // Input check only.
