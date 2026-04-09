@@ -99,21 +99,5 @@ public class AmmoCrate : EquipmentItem
     public override string GetStatusText() => $"{itemName} — {ammoAmount} pts";
 }
 
-/// <summary>Hover Boost — extends max hover duration by 3 seconds.</summary>
-public class HoverBoost : EquipmentItem
-{
-    public float boostAmount = 3f;
 
-    private void Awake()
-    {
-        itemName       = "Hover Boost";
-        collectMessage = $"Hover Boost! Max hover time +{boostAmount}s.";
-    }
 
-    public override void ApplyEffect(PlayerInventory inventory)
-    {
-        inventory.ExtendHoverDuration(boostAmount);
-    }
-
-    public override string GetStatusText() => $"{itemName} — +{boostAmount}s hover time";
-}
