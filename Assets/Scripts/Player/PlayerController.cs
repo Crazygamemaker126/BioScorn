@@ -6,9 +6,7 @@ using UnityEngine.UI;
 using System.IO;
 using UnityEngine.InputSystem;
 
-[RequireComponent (typeof(Rigidbody))]
-
-//Extract methods
+[RequireComponent(typeof(Rigidbody))]
 public class PlayerController : MonoBehaviour
 {
     public float moveSpeed = 4f;
@@ -23,7 +21,7 @@ public class PlayerController : MonoBehaviour
 
     public float maxHoverDuration = 5f;
     public float hoveringTimer;
-    public float currentHoverTimeLeft; // will use to beef up hover mechanic as deployment ensues
+    public float currentHoverTimeLeft;
     public float slopeJumpOffset = 3f;
     public float originalAngularDamping;
 
@@ -31,85 +29,64 @@ public class PlayerController : MonoBehaviour
     public float airDrag = 0f;
     public float slopeDrag = 10f;
 
+    // Optional — assign in Inspector only if you want PlayerController
+    // to also drive a slider directly. Leaving it empty is fine.
     public Slider hoverTimerSlider;
-    
+
+    // Fired every frame the hover timer changes — HUDController subscribes to this
+    public event Action<float> OnHoverTimerChanged;
 
     private Rigidbody rb;
-    [SerializeField] private bool isGrounded; //Never returns to True when contacting slope while hovering 
-    [SerializeField] private bool isHovering; //Turns to false when contacting slope
-    [SerializeField] private bool onSlope; //Never returns to True when contacting slope while hovering 
+    [SerializeField] private bool isGrounded;
+    [SerializeField] private bool isHovering;
+    [SerializeField] private bool onSlope;
     [SerializeField] private bool jumpingFromSlope;
     [SerializeField] private bool canHover = true;
-    
 
-    
     private Coroutine startHoverCo;
     private Coroutine regenHoverTimerCo;
 
     private void Awake()
     {
-        rb = GetComponent<Rigidbody> ();
+        rb = GetComponent<Rigidbody>();
         rb.freezeRotation = true;
         currentmaxLinVel = rb.maxLinearVelocity;
-        hoverTimerSlider.value = hoveringTimer;
-        /*hoverTimerSlider.maxValue = maxHoverDuration;*/ //Leave this out, it breaks UI by setting the maxValue of the slider to 5 when it should just be 1.
         originalAngularDamping = rb.angularDamping;
         hoveringTimer = maxHoverDuration;
         currentHoverTimeLeft = maxHoverDuration;
         canHover = true;
 
         UpdateHoverTimer();
-        
-
     }
 
     private void Update()
     {
         UpdateHoverTimer();
-
-
-        
-
-        
-       
     }
 
-    public void OnJump(InputAction.CallbackContext context) 
+    public void OnJump(InputAction.CallbackContext context)
     {
         if (context.performed)
         {
             if (isGrounded)
             {
-                if (!onSlope)
-                {
-                    rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
-                }
-                else
-                {
-                    rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
-                    jumpingFromSlope = true;
-                }
+                rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+                if (onSlope) jumpingFromSlope = true;
             }
             else if (!isHovering && canHover && hoveringTimer > 0)
             {
-
                 StartHover();
             }
-            else 
+            else
             {
-
                 StopHover();
             }
-            
         }
-
     }
 
     public void OnMove(InputAction.CallbackContext context)
     {
         moveDir = new Vector3(context.ReadValue<Vector2>().x, 0, context.ReadValue<Vector2>().y);
-           
-        
     }
 
     public void HandleMovement()
@@ -117,141 +94,89 @@ public class PlayerController : MonoBehaviour
         Vector3 move = (transform.forward * moveDir.z + transform.right * moveDir.x) * moveSpeed;
         Vector3 newVelocity = new Vector3(move.x, rb.linearVelocity.y, move.z);
         rb.linearVelocity = newVelocity;
-
     }
 
     private void FixedUpdate()
     {
-
         HandleMovement();
         HandleHoverTimer();
+
         isGrounded = Physics.Raycast(transform.position, Vector3.down, 1.1f, groundMask);
         onSlope = Physics.Raycast(transform.position, Vector3.down, 1.5f, slopeMask);
-       
 
-     
+        if (onSlope) isGrounded = true;
 
-        if (onSlope) 
-        {
-            isGrounded = true;
-        }
-
-        if (isGrounded || onSlope) 
+        if (isGrounded || onSlope)
         {
             rb.linearDamping = groundDrag;
             StopHover();
         }
-        else 
+        else
         {
             rb.linearDamping = airDrag;
         }
     }
 
-    public void StartHover() 
+    public void StartHover()
     {
         isHovering = true;
         canHover = false;
         rb.useGravity = false;
-
         rb.linearVelocity = new Vector3(rb.linearVelocity.x, 0, rb.linearVelocity.z);
-
-       
-
-
     }
 
-
-
-    public void StopHover() 
+    public void StopHover()
     {
         canHover = true;
         isHovering = false;
+        rb.useGravity = true;
+        rb.maxLinearVelocity = currentmaxLinVel;
 
-        if (!jumpingFromSlope)
+        if (jumpingFromSlope)
         {
-            rb.useGravity = true;
-
-            rb.maxLinearVelocity = currentmaxLinVel;
-        }
-        else 
-        {
-            rb.useGravity = true;
-
-            rb.maxLinearVelocity = currentmaxLinVel;
             jumpingFromSlope = false;
             rb.angularDamping = originalAngularDamping;
         }
-        
-       
-       
     }
-    
-    public void HandleHoverTimer() 
+
+    public void HandleHoverTimer()
     {
-        if (isHovering) 
-        { 
-        hoveringTimer -= Time.deltaTime;
-        }
-        else 
-        {
-            hoveringTimer += Time.deltaTime;
-        }
-
+        hoveringTimer += isHovering ? -Time.deltaTime : Time.deltaTime;
         hoveringTimer = Mathf.Clamp(hoveringTimer, 0, maxHoverDuration);
-        
-        if(hoveringTimer == 0) 
-        {
+
+        if (hoveringTimer == 0)
             StopHover();
-        }
+
+        // Fire every frame so HUDController can update the slider smoothly
+        OnHoverTimerChanged?.Invoke(hoveringTimer / maxHoverDuration);
     }
 
-    public IEnumerator StartHoverCo() 
+    public void UpdateHoverTimer()
+    {
+        if (hoverTimerSlider != null)
+            hoverTimerSlider.value = hoveringTimer / maxHoverDuration;
+    }
+
+    public IEnumerator StartHoverCo()
     {
         Debug.Log("Hover timer start");
         while (hoveringTimer > 0)
-        { 
+        {
             hoveringTimer -= Time.deltaTime;
-            
             yield return null;
         }
-
         StopHover();
-        //Debug.Log("HoverCooldownCo");
-        //hoveringTimer += Time.deltaTime;
-        //canHover = false;
-        //isHovering = false;
-        //Debug.Log("Hover ability recovering");
-
-        // if(hoveringTimer >= maxHoverDuration)
-        //canHover = true;
-        // hoverCooldownCo = null;
-        // Debug.Log("Hover ability returned");
-
-
     }
 
-    public IEnumerator RegenHoverTimerCo() 
+    public IEnumerator RegenHoverTimerCo()
     {
         Debug.Log("Hover timer regenerating");
-
-        while (hoveringTimer < maxHoverDuration) 
+        while (hoveringTimer < maxHoverDuration)
         {
             hoveringTimer += Time.deltaTime;
             yield return null;
         }
-
     }
 
-    public void UpdateHoverTimer() 
-    {
-        hoverTimerSlider.value = hoveringTimer/maxHoverDuration;
-
-    }
-
-   
-
-    private void OnDrawGizmos()
-    {
-        
-    }
+    private void OnDrawGizmos() { }
 }

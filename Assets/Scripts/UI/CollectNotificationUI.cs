@@ -26,12 +26,13 @@ public class CollectNotificationUI : MonoBehaviour
 
     private void Start()
     {
+        Debug.Log("CollectNotificationUI Start fired");
         if (playerInventory == null)
         {
             Debug.LogWarning("CollectNotificationUI: PlayerInventory not assigned.");
             return;
         }
-
+        Debug.Log("Subscribing to OnItemCollected");
         playerInventory.OnItemCollected += ShowNotification;
 
         if (notificationCanvasGroup != null)
@@ -40,20 +41,22 @@ public class CollectNotificationUI : MonoBehaviour
 
     private void OnDestroy()
     {
-        if (playerInventory != null)
-            playerInventory.OnItemCollected -= ShowNotification;
+        //if (playerInventory != null) 
+            
     }
 
-    private void ShowNotification(Item_Base item)
+    private void ShowNotification(ItemBase item)
     {
+        Debug.Log($"ShowNotification fired for: {item.itemName}");
+
         if (notificationText == null) return;
 
         // Check if item has a collectMessage (EquipmentItem subclass)
         // otherwise fall back to itemName
-        EquipmentItem ei = item as EquipmentItem;
-        notificationText.text = (ei != null && !string.IsNullOrEmpty(ei.collectMessage))
-            ? ei.collectMessage
-            : $"{item.itemName} collected!";
+
+        notificationText.text = !string.IsNullOrEmpty(item.pickupMessage)
+    ? item.pickupMessage
+    : $"{item.itemName} collected!";
 
         if (_activeRoutine != null)
             StopCoroutine(_activeRoutine);

@@ -1,111 +1,139 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
-using TMPro;
 
-
+/// <summary>
+/// Tracks everything the player is carrying.
+/// All item interaction goes through ScriptableObject-based ItemBase data —
+/// no MonoBehaviour item classes anywhere in this system.
+///
+/// World pickups should have a WorldItem component that holds an ItemBase
+/// reference and calls inventory.CollectItem(data) on trigger.
+/// </summary>
 public class PlayerInventory : MonoBehaviour
 {
-    
-    public Dictionary<Item_Base, int> inventory = new Dictionary<Item_Base, int>();
-    public TextMeshProUGUI inventoryTextbox;
+    // ── Runtime inventory store ──────────────────────────────────────────
+    public Dictionary<ItemBase, int> inventory = new Dictionary<ItemBase, int>();
 
-   
+    // ── Cached component refs ────────────────────────────────────────────
     public HealthTracking HealthTracking { get; private set; }
     private PlayerController _playerController;
 
-    //Player inventory stats
+    // ── Tracked stats ────────────────────────────────────────────────────
     public int KeyCount { get; private set; } = 0;
     public int AmmoCount { get; private set; } = 0;
 
-    //UI implementation
-    public event Action<Item_Base> OnItemCollected;
+    // ── UI Events ────────────────────────────────────────────────────────
+    public event Action<ItemBase> OnItemCollected;
     public event Action<int> OnKeyCountChanged;
-    public event Action<int> OnArmorChanged;
+    public event Action<int> OnAmmoChanged;
     public event Action<float> OnHoverDurationChanged;
+    public event Action<int> OnHealthChanged;
 
-    //Caches references
+    // ────────────────────────────────────────────────────────────────────
     private void Awake()
     {
         HealthTracking = GetComponent<HealthTracking>();
         _playerController = GetComponent<PlayerController>();
     }
 
-    private void OnTriggerEnter(Collider other)
+    // ── Pickup entry point ───────────────────────────────────────────────
+    public void CollectItem(ItemBase itemData)
     {
-        if (other.GetComponent<Item_Base>())
-        {
-            AddItem(other.GetComponent<Item_Base>(), 1);
-            other.GetComponent<Item_Base>().Pickup();
+        Debug.Log($"CollectItem fired for: {itemData.itemName}");
+        itemData.OnCollected(this);
+        OnItemCollected?.Invoke(itemData);
+    }           
 
-            // Added fire event so UI reacts instantly
-            OnItemCollected?.Invoke(other.GetComponent<Item_Base>());
-        }
-    }
-
-    
-    public void AddItem(Item_Base itemName, int amount)
+    // ── Generic inventory helpers ────────────────────────────────────────
+    public void AddToInventory(ItemBase itemData, int amount = 1)
     {
-        if (inventory.ContainsKey(itemName))
-        {
-            inventory[itemName] += amount;
-        }
+        if (inventory.ContainsKey(itemData))
+            inventory[itemData] += amount;
         else
-        {
-            inventory.Add(itemName, amount);
-        }
-
-        UpdateInventoryList();
+            inventory[itemData] = amount;
     }
 
-    
-    public void RemoveItem(Item_Base itemName, int amount)
+    public void RemoveFromInventory(ItemBase itemData, int amount = 1)
     {
-        if (inventory.ContainsKey(itemName))
-        {
-            inventory[itemName] -= amount;
-        }
+        if (!inventory.ContainsKey(itemData)) return;
 
-        if (inventory[itemName] <= 0)
-        {
-            inventory.Remove(itemName);
-        }
+        inventory[itemData] -= amount;
 
-        UpdateInventoryList();
+        if (inventory[itemData] <= 0)
+            inventory.Remove(itemData);
     }
 
-    
-    private void UpdateInventoryList()
-    {
-        inventoryTextbox.text = "Inventory\n";
+    // ── Item-type-specific methods (called by SO OnCollected) ────────────
 
-        foreach (KeyValuePair<Item_Base, int> item in inventory)
-        {
-            inventoryTextbox.text += $"{item.Key.itemName} : {item.Value}\n";
-        }
+    /// <summary>Called by HealthPackData.OnCollected.</summary>
+    public void HealPlayer(int amount)
+    {
+        if (HealthTracking == null) return;
+        HealthTracking.OnHealthIncreased(amount);
+        OnHealthChanged?.Invoke(HealthTracking.CurrentHealth);
     }
 
-    
-
-    public void AddKey()
+    /// <summary>Called by KeyData.OnCollected.</summary>
+    public void AddKey(KeyData key)
     {
+        AddToInventory(key);
         KeyCount++;
         OnKeyCountChanged?.Invoke(KeyCount);
     }
 
-    public void AddAmmo(int amount)
+    /// <summary>Called by WeaponData subtypes (Pistol, Shotgun, etc.).</summary>
+    public void AddWeapon(WeaponData weapon, int startingAmmo)
     {
-        AmmoCount += amount;
-        OnArmorChanged?.Invoke(AmmoCount);
+        if (inventory.ContainsKey(weapon))
+            inventory[weapon] += startingAmmo;
+        else
+            inventory[weapon] = startingAmmo;
+
+        AmmoCount += startingAmmo;
+        OnAmmoChanged?.Invoke(AmmoCount);
     }
 
-    public void ExtendHoverDuration(float seconds)
+    /// <summary>Called by WingsData.OnCollected.</summary>
+    public void ApplyWings(WingsData wings)
     {
         if (_playerController == null) return;
-        _playerController.maxHoverDuration += seconds;
+
+        _playerController.maxHoverDuration += wings.hoverDurationBonus;
+        _playerController.moveSpeed += wings.moveSpeedBonus;
+        _playerController.jumpForce += wings.jumpForceBonus;
+
         _playerController.hoveringTimer = Mathf.Min(
-            _playerController.hoveringTimer + seconds,
+            _playerController.hoveringTimer + wings.hoverDurationBonus,
             _playerController.maxHoverDuration);
+
+        AddToInventory(wings);
         OnHoverDurationChanged?.Invoke(_playerController.maxHoverDuration);
+    }
+
+    // ── Key check helpers (used by door scripts) ─────────────────────────
+    public bool HasKey(string doorID)
+    {
+        foreach (var kvp in inventory)
+        {
+            if (kvp.Key is KeyData key && key.doorID == doorID && kvp.Value > 0)
+                return true;
+        }
+        return false;
+    }
+
+    public bool UseKey(string doorID)
+    {
+        foreach (var kvp in inventory)
+        {
+            if (kvp.Key is KeyData key && key.doorID == doorID && kvp.Value > 0)
+            {
+                RemoveFromInventory(key);
+                KeyCount = Mathf.Max(0, KeyCount - 1);
+                OnKeyCountChanged?.Invoke(KeyCount);
+                return true;
+            }
+        }
+        return false;
     }
 }
