@@ -20,7 +20,7 @@ public class TestWinSphere : MonoBehaviour
             {
                 if (Input.anyKeyDown)
                 {
-                    SceneManager.LoadScene("TestScene");
+                    SceneManager.LoadScene("Level 1 - Enemy");
                 }
             }
         }

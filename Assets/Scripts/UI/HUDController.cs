@@ -22,6 +22,7 @@ public class HUDController : MonoBehaviour
     [Header("Hover Timer")]
     public Slider hoverTimerSlider;
     public TextMeshProUGUI hoverTimerText;
+    public GameObject hoverTimerContainer;
 
     [Header("Data Sources")]
     public PlayerInventory playerInventory;
@@ -42,6 +43,9 @@ public class HUDController : MonoBehaviour
             return;
         }
 
+        if (hoverTimerContainer != null)
+            hoverTimerContainer.SetActive(false);
+
         // Health
         if (playerInventory.HealthTracking != null)
         {
@@ -60,6 +64,7 @@ public class HUDController : MonoBehaviour
 
         // Hover timer — direct from PlayerController, fires every frame
         playerController.OnHoverTimerChanged += UpdateHoverSlider;
+        
 
         // Initialise displays with current values
         if (playerInventory.HealthTracking != null)
@@ -68,6 +73,7 @@ public class HUDController : MonoBehaviour
         UpdateKeys(playerInventory.KeyCount);
         UpdateAmmo(playerInventory.AmmoCount);
         UpdateHoverSlider(playerController.hoveringTimer / playerController.maxHoverDuration);
+        UpdateHoverMax(playerController.maxHoverDuration);
     }
 
     private void OnDestroy()
@@ -117,5 +123,8 @@ public class HUDController : MonoBehaviour
     {
         if (hoverTimerSlider != null)
             hoverTimerSlider.value = normalised;
+
+        if (hoverTimerContainer != null && !hoverTimerContainer.activeSelf && normalised < 1f)
+            hoverTimerContainer.SetActive(true);
     }
 }

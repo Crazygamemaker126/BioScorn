@@ -17,4 +17,4 @@ MonoBehaviour:
   Icon: {fileID: 0}
   hoverDurationBonus: 2
   moveSpeedBonus: 1.25
-  jumpForceBonus: 0.25
+  jumpForceBonus: 0.5

@@ -9,4 +9,12 @@ public class HealthPackData : CollectibleBase
     {
         inventory.HealPlayer(healAmount);
     }
+
+    /// <summary>
+    /// Shows how much health each pack restores and how many are held.
+    /// </summary>
+    public override string GetInventoryDisplay(int quantity)
+    {
+        return $"{itemName} x{quantity} — +{healAmount} HP each";
+    }
 }

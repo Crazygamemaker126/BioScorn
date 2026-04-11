@@ -8,6 +8,10 @@ using UnityEngine;
 /// </summary>
 public abstract class CollectibleBase : ItemBase
 {
-    // Shared collectible-specific fields can go here in the future
-    // (e.g. pickup sound, particle effect prefab, etc.)
+    // Collectibles default to showing name and quantity.
+    // Subclasses can override GetInventoryDisplay for more specific info.
+    public override string GetInventoryDisplay(int quantity)
+    {
+        return $"{itemName} x{quantity}";
+    }
 }

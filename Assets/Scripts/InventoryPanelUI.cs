@@ -1,10 +1,14 @@
-﻿using TMPro;
+﻿using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 /// <summary>
-/// Toggleable inventory panel — press Tab (or reassign toggleKey) to open/close.
-/// Subscribes to PlayerInventory.OnItemCollected to add a row for each new pickup.
-/// No Update() polling beyond the single key check for the toggle.
+/// Toggleable inventory panel — press Tab to open/close.
+/// Subscribes to PlayerInventory events to refresh the display
+/// whenever the inventory changes. No Update() polling.
+///
+/// Each row calls item.GetInventoryDisplay(quantity) which each
+/// ItemBase subclass overrides to show item-relevant information.
 /// </summary>
 public class InventoryPanelUI : MonoBehaviour
 {
@@ -18,6 +22,9 @@ public class InventoryPanelUI : MonoBehaviour
 
     private bool _isOpen = false;
 
+    // Tracks spawned row objects so we can clear and rebuild cleanly
+    private readonly List<GameObject> _rows = new List<GameObject>();
+
     // ────────────────────────────────────────────────────────────────────
     private void Start()
     {
@@ -27,16 +34,29 @@ public class InventoryPanelUI : MonoBehaviour
             return;
         }
 
-        playerInventory.OnItemCollected += AddInventoryRow;
+        playerInventory.OnItemCollected += OnItemCollectedHandler;
+        playerInventory.OnAmmoChanged += OnAmmoChangedHandler;
+        playerInventory.OnKeyCountChanged += OnKeyCountChangedHandler;
+
         gameObject.SetActive(false);
     }
 
     private void OnDestroy()
     {
-        if (playerInventory != null)
-            playerInventory.OnItemCollected -= AddInventoryRow;
+        if (playerInventory == null) return;
+
+        playerInventory.OnItemCollected -= OnItemCollectedHandler;
+        playerInventory.OnAmmoChanged -= OnAmmoChangedHandler;
+        playerInventory.OnKeyCountChanged -= OnKeyCountChangedHandler;
     }
 
+    // ── Event handler shims ──────────────────────────────────────────────
+    // Named methods so subscribe/unsubscribe references match correctly.
+    private void OnItemCollectedHandler(ItemBase item) => RefreshInventory();
+    private void OnAmmoChangedHandler(int amount) => RefreshInventory();
+    private void OnKeyCountChangedHandler(int count) => RefreshInventory();
+
+    // ────────────────────────────────────────────────────────────────────
     // Input check only — one line, acceptable Update use.
     private void Update()
     {
@@ -44,22 +64,35 @@ public class InventoryPanelUI : MonoBehaviour
             SetPanelOpen(!_isOpen);
     }
 
-    // ────────────────────────────────────────────────────────────────────
     private void SetPanelOpen(bool open)
     {
         _isOpen = open;
         gameObject.SetActive(open);
+
+        // Refresh when opening so display is always current
+        if (open) RefreshInventory();
     }
 
-    private void AddInventoryRow(ItemBase item)
+    /// <summary>
+    /// Clears all rows and rebuilds from the current inventory dictionary.
+    /// Each item drives its own display string via GetInventoryDisplay().
+    /// </summary>
+    private void RefreshInventory()
     {
+        foreach (GameObject row in _rows)
+            Destroy(row);
+        _rows.Clear();
+
         if (inventoryRowPrefab == null || rowContainer == null) return;
 
-        TextMeshProUGUI row = Instantiate(inventoryRowPrefab, rowContainer);
+        foreach (var kvp in playerInventory.inventory)
+        {
+            ItemBase item = kvp.Key;
+            int quantity = kvp.Value;
 
-        // Display pickup message if the designer set one, otherwise just the item name
-        row.text = !string.IsNullOrEmpty(item.pickupMessage)
-            ? item.pickupMessage
-            : item.itemName;
+            TextMeshProUGUI row = Instantiate(inventoryRowPrefab, rowContainer);
+            row.text = item.GetInventoryDisplay(quantity);
+            _rows.Add(row.gameObject);
+        }
     }
 }

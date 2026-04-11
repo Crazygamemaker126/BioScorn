@@ -9,4 +9,12 @@ public class KeyData : CollectibleBase
     {
         inventory.AddKey(this);
     }
+
+    /// <summary>
+    /// Shows which door this key belongs to.
+    /// </summary>
+    public override string GetInventoryDisplay(int quantity)
+    {
+        return $"{itemName} — Opens: {doorID}";
+    }
 }

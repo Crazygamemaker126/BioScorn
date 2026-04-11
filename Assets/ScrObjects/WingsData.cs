@@ -16,4 +16,12 @@ public class WingsData : CollectibleBase
     {
         inventory.ApplyWings(this);
     }
+
+    /// <summary>
+    /// Shows the hover duration bonus applied by this pickup.
+    /// </summary>
+    public override string GetInventoryDisplay(int quantity)
+    {
+        return $"{itemName} — Hover +{hoverDurationBonus}s, Speed +{moveSpeedBonus}, Jump +{jumpForceBonus}";
+    }
 }
