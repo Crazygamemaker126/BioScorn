@@ -22,7 +22,7 @@ public class PlayerInventory : MonoBehaviour
     public event Action<Item_Base> OnItemCollected;
     public event Action<int> OnKeyCountChanged;
     public event Action<int> OnArmorChanged;
-    public event Action<float> OnHoverDurationChanged;
+  
 
     //Caches references
     private void Awake()
@@ -99,13 +99,5 @@ public class PlayerInventory : MonoBehaviour
         OnArmorChanged?.Invoke(AmmoCount);
     }
 
-    public void ExtendHoverDuration(float seconds)
-    {
-        if (_playerController == null) return;
-        _playerController.maxHoverDuration += seconds;
-        _playerController.hoveringTimer = Mathf.Min(
-            _playerController.hoveringTimer + seconds,
-            _playerController.maxHoverDuration);
-        OnHoverDurationChanged?.Invoke(_playerController.maxHoverDuration);
-    }
+    
 }
