@@ -33,7 +33,7 @@ public class TestDeathZone : MonoBehaviour
 
             if (Input.anyKeyDown) 
             {
-                SceneManager.LoadScene("TestScene");
+                SceneManager.LoadScene("Level 1 - Enemy");
             }
         }
     }
