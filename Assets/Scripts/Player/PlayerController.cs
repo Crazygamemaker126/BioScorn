@@ -9,16 +9,29 @@ using UnityEngine.InputSystem;
 [RequireComponent(typeof(Rigidbody))]
 public class PlayerController : MonoBehaviour
 {
+    [Header("Movement Settings")]
     public float moveSpeed = 4f;
     public float jumpForce = 5f;
 
     public Vector3 moveDir;
 
+    [Header("Layer Masks")]
     public LayerMask platformMask;
     public LayerMask groundMask;
     public LayerMask slopeMask;
-    public float currentmaxLinVel;
 
+    [Header("Camera Settings")]
+    public float mouseSensitivity = 2f;
+    public float verticalClamp = 90f;
+    public GameObject cameraHolder;
+
+    [Header("Animator Parameters")]
+    public Animator animator;
+
+
+    private float currentmaxLinVel;
+
+    [Header("Hover Variables")]
     public float maxHoverDuration = 5f;
     public float hoveringTimer;
     public float currentHoverTimeLeft;
@@ -59,6 +72,12 @@ public class PlayerController : MonoBehaviour
         UpdateHoverTimer();
     }
 
+    void Start()
+    {
+        animator = GetComponent<Animator>();
+        Cursor.lockState = CursorLockMode.Locked;
+    }
+
     private void Update()
     {
         UpdateHoverTimer();
@@ -83,6 +102,8 @@ public class PlayerController : MonoBehaviour
             }
         }
     }
+
+    
 
     public void OnMove(InputAction.CallbackContext context)
     {
