@@ -43,7 +43,7 @@ public class Pathing : MonoBehaviour
         {
             Gizmos.color = _lineGradient.Evaluate(i / (float)_patrolPoints.Length);
             Gizmos.DrawLine(_patrolPoints[i].position, _patrolPoints[(i + 1) % (_patrolPoints.Length)].position);
-            Debug.Log("i: " + i + "," + ((i + 1) % (_patrolPoints.Length)));
+            /*Debug.Log("i: " + i + "," + ((i + 1) % (_patrolPoints.Length)));*/
         }
     }
 }

@@ -26,13 +26,13 @@ public class CollectNotificationUI : MonoBehaviour
 
     private void Start()
     {
-        Debug.Log("CollectNotificationUI Start fired");
+        
         if (playerInventory == null)
         {
             Debug.LogWarning("CollectNotificationUI: PlayerInventory not assigned.");
             return;
         }
-        Debug.Log("Subscribing to OnItemCollected");
+        
         playerInventory.OnItemCollected += ShowNotification;
 
         if (notificationCanvasGroup != null)
