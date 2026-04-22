@@ -22,14 +22,14 @@ public class WorldItem : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        Debug.Log($"WorldItem triggered by: {other.gameObject.name}");
+        
         PlayerInventory inventory = other.GetComponent<PlayerInventory>();
         if (inventory == null)
         {
             Debug.Log("No PlayerInventory found on: " + other.gameObject.name);
             return;
         }
-        Debug.Log($"Collecting: {data.itemName}");
+        
         inventory.CollectItem(data);
         Destroy(gameObject);
     }

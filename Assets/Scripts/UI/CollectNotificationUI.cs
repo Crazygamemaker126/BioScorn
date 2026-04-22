@@ -47,7 +47,7 @@ public class CollectNotificationUI : MonoBehaviour
 
     private void ShowNotification(ItemBase item)
     {
-        Debug.Log($"ShowNotification fired for: {item.itemName}");
+        /*Debug.Log($"ShowNotification fired for: {item.itemName}");*/
 
         if (notificationText == null) return;
 

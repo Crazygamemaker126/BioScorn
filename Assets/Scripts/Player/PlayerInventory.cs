@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using UnityEngine;
 
 /// <summary>
@@ -62,6 +63,11 @@ public class PlayerInventory : MonoBehaviour
 
         if (inventory[itemData] <= 0)
             inventory.Remove(itemData);
+    }
+
+    public void OpenInventory(ContextCallback context)
+    {
+
     }
 
     // ── Item-type-specific methods (called by SO OnCollected) ────────────
