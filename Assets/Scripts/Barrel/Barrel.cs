@@ -49,7 +49,7 @@ public class Barrel : MonoBehaviour, IDamageable
         yield return new WaitForSeconds(3f);
         Boom(); 
     }
-
+#if UNITY_EDITOR
     private void OnDrawGizmos()
     {
 
@@ -60,6 +60,7 @@ public class Barrel : MonoBehaviour, IDamageable
         Gizmos.color = _color;
         Gizmos.DrawWireSphere(transform.position, _explodeRadius);
     }
+#endif
 
 }
 
