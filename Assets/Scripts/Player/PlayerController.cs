@@ -100,6 +100,7 @@ public class PlayerController : MonoBehaviour
             {
                 StopHover();
             }
+            Debug.Log("Jumped");
         }
     }
 
@@ -108,6 +109,7 @@ public class PlayerController : MonoBehaviour
     public void OnMove(InputAction.CallbackContext context)
     {
         moveDir = new Vector3(context.ReadValue<Vector2>().x, 0, context.ReadValue<Vector2>().y);
+        Debug.Log("Moving");
     }
 
     public void HandleMovement()

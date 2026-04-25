@@ -28,6 +28,9 @@ public class HUDController : MonoBehaviour
     public PlayerInventory playerInventory;
     public PlayerController playerController;
 
+    [Header("Audio Log Panel")]
+    public AudioLogInventoryUI audioLogPanel;
+
     // ────────────────────────────────────────────────────────────────────
     private void Start()
     {
@@ -74,6 +77,12 @@ public class HUDController : MonoBehaviour
         UpdateAmmo(playerInventory.AmmoCount);
         UpdateHoverSlider(playerController.hoveringTimer / playerController.maxHoverDuration);
         UpdateHoverMax(playerController.maxHoverDuration);
+    }
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Tab))
+            audioLogPanel.SetPanelOpen(!audioLogPanel.IsOpen);
     }
 
     private void OnDestroy()

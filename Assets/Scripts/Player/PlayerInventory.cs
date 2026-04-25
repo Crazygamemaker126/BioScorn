@@ -30,6 +30,7 @@ public class PlayerInventory : MonoBehaviour
     public event Action<int> OnAmmoChanged;
     public event Action<float> OnHoverDurationChanged;
     public event Action<int> OnHealthChanged;
+    public event Action<AudioLogData> OnAudioLogCollected;
 
     // ────────────────────────────────────────────────────────────────────
     private void Awake()
@@ -115,6 +116,12 @@ public class PlayerInventory : MonoBehaviour
 
         AddToInventory(wings);
         OnHoverDurationChanged?.Invoke(_playerController.maxHoverDuration);
+    }
+
+    public void AddAudioLog(AudioLogData log)
+    {
+        AddToInventory(log);
+        OnAudioLogCollected?.Invoke(log);
     }
 
     // ── Key check helpers (used by door scripts) ─────────────────────────

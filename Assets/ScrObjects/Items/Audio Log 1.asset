@@ -17,5 +17,7 @@ MonoBehaviour:
 
 '
   Icon: {fileID: 0}
-  audioClip: {fileID: 0}
-  audioSource: {fileID: 0}
+  audioClip: {fileID: 8300000, guid: ff5f85da24bc943d1abdc5760a22bc81, type: 3}
+  subtitleText: The Shock-jock was initially created to be an attempted source of
+    limitless energy, due to unforeseen circumstances it mutated into what it is
+    now. One of them single-handedly killed twenty security personnel.

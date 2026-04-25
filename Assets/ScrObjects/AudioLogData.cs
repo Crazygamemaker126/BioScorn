@@ -3,13 +3,18 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "Items/Collectibles/AudioLog")]
 public class AudioLogData : ItemBase
 {
+    [Header("Audio")]
     public AudioClip audioClip;
-    public AudioSource audioSource;
+    [Header("Subtitles")]
+    [TextArea(3, 8)]
+    public string subtitleText;
+    
+    
+
 
     public override void OnCollected(PlayerInventory inventory)
     {
-        return;
-        //Needs to fire the audio clip on collection.
+        inventory.AddAudioLog(this);
     }
 
     public override string GetInventoryDisplay(int quantity)
